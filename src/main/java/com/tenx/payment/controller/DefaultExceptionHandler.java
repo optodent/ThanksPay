@@ -4,9 +4,11 @@ import com.tenx.payment.exception.ApiException;
 import com.tenx.payment.exception.UnsupportedCurrencyException;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -41,7 +43,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
         return getApiErrorDetailsResponseEntityForException(HttpStatus.BAD_REQUEST.value(), LocalDateTime.now(), errors.toArray(new String[0]));
     }
 
-    @Nullable
+    @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 

@@ -7,12 +7,7 @@ import java.util.Currency;
 
 public class CurrencyValidator implements ConstraintValidator<AllowedCurrencies, Currency> {
 
-    private String[] allowedCurrencies;
-
-    @Override
-    public void initialize(AllowedCurrencies constraintAnnotation) {
-        allowedCurrencies = constraintAnnotation.allowedCurrencies();
-    }
+    private final String[] allowedCurrencies =  {"USD", "EUR", "GBP", "BGN"};
 
     @Override
     public boolean isValid(Currency value, ConstraintValidatorContext context) {

@@ -19,7 +19,4 @@ public @interface AllowedCurrencies {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-
-    String[] allowedCurrencies() default {"USD", "EUR", "GBP", "BGN"};
-
 }
