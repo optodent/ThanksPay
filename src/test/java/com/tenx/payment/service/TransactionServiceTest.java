@@ -101,7 +101,8 @@ class TransactionServiceTest {
         // When
         // Then
         assertThatThrownBy(() -> transactionService.prepareTransaction(transactionDto))
-                .isInstanceOf(InvalidTransactionException.class);
+                .isInstanceOf(InvalidTransactionException.class)
+                .hasMessage("Insufficient amount");
     }
 
     @Test
