@@ -1,6 +1,6 @@
 package com.tenx.payment.service;
 
-import com.tenx.payment.dto.transaction.TransactionDto;
+import com.tenx.payment.dto.transaction.TransactionRequestDto;
 import com.tenx.payment.exception.InvalidTransactionException;
 import com.tenx.payment.model.Account;
 import com.tenx.payment.model.Transaction;
@@ -29,17 +29,28 @@ public class TransactionService {
         this.currencyService = currencyService;
     }
 
-    public Transaction prepareTransaction(TransactionDto transactionDto) {
-        if (transactionDto.getSourceAccountId().equals(transactionDto.getTargetAccountId())) {
+    /**
+     * Validates the {@link TransactionRequestDto} internal in order to make a money transaction from
+     * account A to account B.
+     *
+     * Must be invoked before {@link TransactionService#execute(TransactionRequestDto)} in order to verify
+     * the integrity of the {@link TransactionRequestDto}
+     *
+     * 1. Check against same account money transfers.
+     * 2. Check against insufficient currency is source account.
+     *
+     * @param transactionRequestDto to be validated
+     */
+    public void assertValidTransaction(TransactionRequestDto transactionRequestDto) {
+        if (transactionRequestDto.getSourceAccountId().equals(transactionRequestDto.getTargetAccountId())) {
             throw new InvalidTransactionException("Source and target account must be different");
         }
 
-        Account sourceAccount = accountService.findAccountById(transactionDto.getSourceAccountId());
-        Account targetAccount = accountService.findAccountById(transactionDto.getTargetAccountId());
+        Account sourceAccount = accountService.findAccountById(transactionRequestDto.getSourceAccountId());
 
         // Check if the amount in the currency we are transferring is available in source account
-        BigDecimal transactionAmount = transactionDto.getAmount();
-        Currency transactionCurrency = transactionDto.getCurrency();
+        BigDecimal transactionAmount = transactionRequestDto.getAmount();
+        Currency transactionCurrency = transactionRequestDto.getCurrency();
         BigDecimal amountToVerify;
         if (!sourceAccount.getCurrency().equals(transactionCurrency)) {
             // Currencies are different => convert the amount in the source account currency
@@ -51,33 +62,42 @@ public class TransactionService {
         if (sourceAccount.getBalance().compareTo(amountToVerify) < 0) {
             throw new InvalidTransactionException("Insufficient amount");
         }
-
-        return new Transaction(sourceAccount, targetAccount, transactionAmount, transactionCurrency);
     }
 
+    /**
+     * Transfers {@link TransactionRequestDto#getAmount()} from a source account to a target account.
+     * The amount to transfer will be debited from the source account and will credit the target account.
+     * Internally supports conversion to different currencies if source and target account currency are not the same.
+     *
+     * The method must be executed with conjunction of {@link TransactionService#assertValidTransaction(TransactionRequestDto)}
+     * to ensure the integrity of the transaction internals.
+     *
+     * @param transactionRequestDto to be executed and persisted
+     * @return the persisted {@link Transaction}
+     */
     @Transactional
-    @Retryable(retryFor = OptimisticLockException.class)
-    public void execute(Transaction transaction) {
-        Account sourceAccount = transaction.getSourceAccount();
-        Account targetAccount = transaction.getTargetAccount();
-        BigDecimal transactionAmount = transaction.getAmount();
-        Currency transactionCurrency = transaction.getCurrency();
+    @Retryable(retryFor = {OptimisticLockException.class})
+    public Transaction execute(TransactionRequestDto transactionRequestDto) {
+        Account sourceAccount = accountService.findAccountById(transactionRequestDto.getSourceAccountId());
+        Account targetAccount = accountService.findAccountById(transactionRequestDto.getTargetAccountId());
+        BigDecimal transactionAmount = transactionRequestDto.getAmount();
+        Currency transactionCurrency = transactionRequestDto.getCurrency();
 
         // Convert transactionAmount with the source account currency
-        BigDecimal sourceAccountAmount = currencyService.convertCurrency(transactionAmount, transaction.getCurrency(), sourceAccount.getCurrency());
+        BigDecimal sourceAccountAmount = currencyService.convertCurrency(transactionAmount, transactionCurrency, sourceAccount.getCurrency());
 
         // Subtract the amount from the source account and persist
         sourceAccount.setBalance(sourceAccount.getBalance().subtract(sourceAccountAmount));
         accountService.saveAccount(sourceAccount);
 
         // Convert transactionAmount with the target account currency
-        BigDecimal targetAccountAmount = currencyService.convertCurrency(transactionAmount, transaction.getCurrency(), targetAccount.getCurrency());
+        BigDecimal targetAccountAmount = currencyService.convertCurrency(transactionAmount, transactionCurrency, targetAccount.getCurrency());
 
         // Add the transferred amount in currency format of the account and persist
         targetAccount.setBalance(targetAccount.getBalance().add(targetAccountAmount));
         accountService.saveAccount(targetAccount);
 
         // Persist the transaction entity
-        transactionRepository.save(new Transaction(sourceAccount, targetAccount, transactionAmount, transactionCurrency));
+        return transactionRepository.save(new Transaction(sourceAccount, targetAccount, transactionAmount,  transactionCurrency));
     }
 }

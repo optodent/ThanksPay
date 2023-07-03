@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = CurrencyValidator.class)
 @Documented
 public @interface AllowedCurrencies {
-    String message() default "Invalid currency supplied.";
+    String message() default "Invalid currency supplied";
 
     Class<?>[] groups() default {};
 

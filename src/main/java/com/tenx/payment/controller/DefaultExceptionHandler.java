@@ -54,19 +54,4 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
         ApiErrorDetails apiErrorDetails = new ApiErrorDetails(statusCode, time, errorMessages);
         return new ResponseEntity<>(apiErrorDetails, HttpStatusCode.valueOf(statusCode));
     }
-
-    @Getter
-    @Setter
-    public static class ApiErrorDetails {
-
-        private final int httpCode;
-        private final List<String> messages;
-        private final LocalDateTime time;
-
-        public ApiErrorDetails(int httpCode, LocalDateTime time, String... messages) {
-            this.httpCode = httpCode;
-            this.time = time;
-            this.messages = List.of(messages);
-        }
-    }
 }

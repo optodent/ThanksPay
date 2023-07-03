@@ -1,7 +1,8 @@
 package com.tenx.payment.controller.transaction;
 
 import com.tenx.payment.controller.BaseApi;
-import com.tenx.payment.dto.transaction.TransactionDto;
+import com.tenx.payment.dto.transaction.TransactionRequestDto;
+import com.tenx.payment.dto.transaction.TransactionResponseDto;
 import com.tenx.payment.model.Transaction;
 import com.tenx.payment.service.TransactionService;
 import jakarta.validation.Valid;
@@ -21,8 +22,16 @@ public class TransactionApi extends BaseApi {
     }
 
     @PostMapping("/transaction")
-    public void createTransaction(@Valid @RequestBody TransactionDto transactionDto) {
-        Transaction transaction = transactionService.prepareTransaction(transactionDto);
-        transactionService.execute(transaction);
+    public TransactionResponseDto createTransaction(@Valid @RequestBody TransactionRequestDto transactionRequestDto) {
+        transactionService.assertValidTransaction(transactionRequestDto);
+        Transaction transaction = transactionService.execute(transactionRequestDto);
+
+        // Manual mapper, for prod usages use mapper like mapStruct
+        return new TransactionResponseDto(
+                transaction.getAmount(),
+                transaction.getSourceAccount().getId(),
+                transaction.getTargetAccount().getId(),
+                transaction.getCurrency(),
+                transaction.getId());
     }
 }

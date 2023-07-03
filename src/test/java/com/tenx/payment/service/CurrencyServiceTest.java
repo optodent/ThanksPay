@@ -65,12 +65,15 @@ class CurrencyServiceTest {
 
     @Test
     void convertCurrencyFromGBPToBGN() {
+        // Given
         BigDecimal amount = new BigDecimal("50.00");
         Currency fromCurrency = Currency.getInstance("GBP");
         Currency toCurrency = Currency.getInstance("BGN");
 
+        // When
         BigDecimal convertedAmount = currencyService.convertCurrency(amount, fromCurrency, toCurrency);
 
+        // Then
         BigDecimal expectedAmount = new BigDecimal("114.10");
         assertThat(convertedAmount).isEqualTo(expectedAmount);
     }
@@ -88,7 +91,7 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void convertUnsupportedCurrencyRub() {
+    void convertToUnsupportedCurrencyRub() {
         // Given
         BigDecimal amount = new BigDecimal("100.00");
         Currency fromCurrency = Currency.getInstance("USD");

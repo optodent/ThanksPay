@@ -3,6 +3,7 @@ package com.tenx.payment.dto.transaction;
 import com.tenx.payment.validator.AllowedCurrencies;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -12,8 +13,9 @@ import java.util.Currency;
 import static com.tenx.payment.util.ConstantUtils.DECIMAL_DIGITS_PRECISION;
 import static com.tenx.payment.util.ConstantUtils.DECIMAL_DIGITS_SCALE;
 
+
 @Data
-public class TransactionDto {
+public class TransactionRequestDto {
 
     @NonNull
     @Positive

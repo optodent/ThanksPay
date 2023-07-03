@@ -26,6 +26,17 @@ public class CurrencyService {
         exchangeRates.put(Currency.getInstance("BGN"), new BigDecimal("1.78"));
     }
 
+    /**
+     * Converts amount from a given currency to targeted currency e.g. 50 USD to 46 EUR.
+     * It uses USD basis for internal conversions for mock purposes, as we don't have real conversion rates.
+     *
+     * For the purposes of the assessment only USD, EUR, GBP and BGN are supported.
+     *
+     * @param amount to be converted
+     * @param fromCurrency from source currency
+     * @param toCurrency to targeted currency
+     * @return the converted amount in the targeted currency
+     */
     public BigDecimal convertCurrency(BigDecimal amount, Currency fromCurrency, Currency toCurrency) {
         if (fromCurrency.equals(toCurrency)) {
             return amount;
