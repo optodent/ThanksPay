@@ -2,8 +2,6 @@ package com.tenx.payment.controller;
 
 import com.tenx.payment.exception.ApiException;
 import com.tenx.payment.exception.UnsupportedCurrencyException;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

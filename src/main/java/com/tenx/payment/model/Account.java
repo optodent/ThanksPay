@@ -1,6 +1,5 @@
 package com.tenx.payment.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,8 +11,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import static com.tenx.payment.util.ConstantUtils.DECIMAL_DIGITS_SCALE;
 import static com.tenx.payment.util.ConstantUtils.DECIMAL_DIGITS_PRECISION;
+import static com.tenx.payment.util.ConstantUtils.DECIMAL_DIGITS_SCALE;
 
 @Data
 @Entity

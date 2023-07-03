@@ -1,6 +1,5 @@
 package com.tenx.payment.controller.account;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tenx.payment.controller.ApiErrorDetails;
 import com.tenx.payment.dto.account.AccountRequestDto;

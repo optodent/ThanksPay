@@ -3,7 +3,6 @@ package com.tenx.payment.dto.transaction;
 import com.tenx.payment.validator.AllowedCurrencies;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
